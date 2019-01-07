@@ -1,0 +1,8 @@
+# Visual Studio files and folders
+*.sln
+.vs/
+*.vcxproj*
+
+# Compiled Binaries and build folders
+bin/
+obj/
