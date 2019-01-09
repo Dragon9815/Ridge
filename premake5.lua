@@ -5,7 +5,6 @@
 -- end
 
 IncludeDir = {}
-IncludeDir["GLFW"] = "./Engine/vendor/glfw/include"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 workspace "Ridge"
@@ -31,14 +30,14 @@ workspace "Ridge"
 	includedirs 
 	{
 		sourceDir,
-		"%{prj.name}/vendor/",
-		"%{IncludeDir.GLFW}"
+		"%{prj.name}/vendor/"
 	}	
 	
 	filter "system:windows"
 		cppdialect "C++17"
 		staticruntime "On"
 		systemversion "latest"
+		characterset "MBCS"
 		defines { "RIDGE_PLATFORM_WINDOWS" }
 		
 	
@@ -56,11 +55,6 @@ workspace "Ridge"
 	
 	filter { "system:windows", "configurations:Release" }
 		buildoptions "/MT"
-	
-	-- filter "platforms:*64" 
-		-- architecture "x64"
-		
-include "Engine/vendor/glfw"
 	
 local Engine = project("Engine")
 	kind "SharedLib"
