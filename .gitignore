@@ -2,7 +2,11 @@
 *.sln
 .vs/
 *.vcxproj*
+*.hint
 
 # Compiled Binaries and build folders
 bin/
 obj/
+
+# ImGui Settings
+imgui.ini

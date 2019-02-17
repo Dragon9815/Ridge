@@ -1,19 +1,15 @@
 #pragma once
 
-#include "Ridge/Application.h"
-#include "Ridge/core/RidgeEngine.h"
+#include "Ridge/Core/Application.h"
+#include "Ridge/Core/RidgeEngine.h"
 
 #ifdef RIDGE_PLATFORM_WINDOWS
 extern Ridge::Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-	Ridge::RidgeEngine::Init();
-
 	auto app = CreateApplication();
-	app->Start();
+	app->Run();
 	delete app;
-
-	Ridge::RidgeEngine::Shutdown();
 }
 #endif

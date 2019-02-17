@@ -3,6 +3,8 @@
 
 #include "spdlog\sinks\stdout_color_sinks.h"
 
+#include <fcntl.h>
+
 
 namespace Ridge {
 	std::shared_ptr<spdlog::logger> Log::s_engineLogger;

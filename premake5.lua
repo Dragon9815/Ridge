@@ -1,10 +1,6 @@
--- function os.winSdkVersion()
-    -- local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
-    -- local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
-    -- if sdk_version ~= nil then return sdk_version end
--- end
-
 IncludeDir = {}
+IncludeDir["ImGui"] = "Engine/vendor/ImGui"
+IncludeDir["GLAD"] = "Engine/vendor/GLAD/include"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 workspace "Ridge"
@@ -18,43 +14,38 @@ workspace "Ridge"
 	
 	filter {} -- clear filter
 	
-	local sourceDir = "%{prj.name}/src/";
-	files 
-	{
-		sourceDir .. "**.h",
-		sourceDir .. "**.c",
-		sourceDir .. "**.hpp",
-		sourceDir .. "**.cpp",
-	}
-	
-	includedirs 
-	{
-		sourceDir,
-		"%{prj.name}/vendor/"
-	}	
-	
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 		characterset "MBCS"
-		defines { "RIDGE_PLATFORM_WINDOWS" }
-		
+		defines { "RIDGE_PLATFORM_WINDOWS", "RIDGE_ENABLE_OPENGL", "RIDGE_ENABLE_DIRECTX" }
+
+	filter "system:linux"
+		cppdialect "C++17"
+		defines { "RIDGE_PLATFORM_LINUX", "RIDGE_ENABLE_OPENGL" }
 	
 	filter "configurations:Debug"	
 		defines { "RIDGE_DEBUG" }		
 		symbols "On"
+		runtime "Debug"
+		staticruntime "Off"
 		
 	filter "configurations:Release"	
 		defines { "RIDGE_RELEASE" }	
 		optimize "On"
-		
+		runtime "Release"
+		staticruntime "Off"
+
 	filter "configurations:Dist"
 		defines { "HZ_DIST" }
 		optimize "On"
-	
-	filter { "system:windows", "configurations:Release" }
-		buildoptions "/MT"
+		runtime "Release"
+		staticruntime "Off"
+
+group "Dependencies"
+	include "Engine/vendor/GLAD"
+	include "Engine/vendor/imgui"
+group ""
 	
 local Engine = project("Engine")
 	kind "SharedLib"
@@ -66,6 +57,29 @@ local Engine = project("Engine")
 	pchsource "./Engine/src/RidgePCH.cpp"
 	
 	filter {} -- clear filter
+
+	local sourceDir = "%{prj.name}/src/";
+	local platformDir = sourceDir .. "/Ridge/Platform/";
+	files 
+	{
+		sourceDir .. "**.h",
+		sourceDir .. "**.c",
+		sourceDir .. "**.hpp",
+		sourceDir .. "**.cpp",
+	}
+
+	excludes 
+	{
+		platformDir .. "**/*.*"
+	}
+	
+	includedirs 
+	{
+		sourceDir,
+		"%{prj.name}/vendor/",
+		"%{IncludeDir.GLAD}",
+		"%{IncludeDir.ImGui}"
+	}	
 	
 	includedirs 
 	{
@@ -79,21 +93,52 @@ local Engine = project("Engine")
 	
 	links
 	{
-		
+		"GLAD",
+		"ImGui",
+		"opengl32.lib",
+		"d3d11.lib"
 	}
 	
 	filter "system:windows"
 		defines { "RIDGE_BUILD_DLL" }
+		files 
+		{
+			platformDir .. "Windows/**.h",
+			platformDir .. "Windows/**.c",
+			platformDir .. "Windows/**.hpp",
+			platformDir .. "Windows/**.cpp",
+
+			platformDir .. "OpenGL/**.h",
+			platformDir .. "OpenGL/**.c",
+			platformDir .. "OpenGL/**.hpp",
+			platformDir .. "OpenGL/**.cpp",
+
+			platformDir .. "DirectX/**.h",
+			platformDir .. "DirectX/**.c",
+			platformDir .. "DirectX/**.hpp",
+			platformDir .. "DirectX/**.cpp",
+		}
+		
 	
 project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	basedir "Sandbox"
+	basedir "./Sandbox"
 	
 	filter {} -- clear filter
+
+	local sourceDir = "%{prj.name}/src/";
+	files 
+	{
+		sourceDir .. "**.h",
+		sourceDir .. "**.c",
+		sourceDir .. "**.hpp",
+		sourceDir .. "**.cpp",
+	}
 	
 	includedirs
 	{
+		sourceDir,
 		Engine.basedir .. "/src",
 		Engine.basedir .. "/vendor",
 	}
@@ -107,17 +152,3 @@ project "Sandbox"
 	{
 		"Engine"
 	}
-	
-	--print("{COPY} " .. Engine.targetdir .. "/" .. Engine.targetname .. ".dll")
-	
-	--postbuildcommands
-	--{
-	--	"{COPY} %{cfg.buildtarget.directory}../Engine/Ridge.dll %{cfg.buildtarget.directory}"
-	--}
-	
-	
-	
-	--buildcommands
-	--{
-	--	Engine.targetdir .. "/" .. Engine.targetname .. "." .. Engine.targetextension
-	--}

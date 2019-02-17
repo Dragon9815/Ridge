@@ -1,4 +1,3 @@
-
-[submodule ".\\Engine\\vendor\\imgui"]
-	path = .\\Engine\\vendor\\imgui
+[submodule "Engine/vendor/imgui"]
+	path = Engine/vendor/imgui
 	url = https://github.com/dragon9815/imgui
