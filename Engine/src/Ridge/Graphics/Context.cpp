@@ -12,8 +12,12 @@ namespace Ridge {
 	{
 		switch (GetRenderAPI())
 		{
+#ifdef RIDGE_ENABLE_OPENGL
 		case RenderAPI::OPENGL:		s_context = new Graphics::GLContext(windowProps, deviceHandle); break;
+#endif
+#ifdef RIDGE_ENABLE_DIRECT3D
 		case RenderAPI::DIRECT3D:	s_context = new DXContext(windowProps, deviceHandle); break;
+#endif
 		default:					return false;
 		}
 

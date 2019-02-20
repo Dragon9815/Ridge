@@ -43,8 +43,8 @@
 #endif
 
 // TODO: Re-enable DirectX
-#undef RIDGE_ENABLE_DIRECTX
-#ifdef RIDGE_ENABLE_DIRECTX
+#undef RIDGE_ENABLE_DIRECT3D
+#ifdef RIDGE_ENABLE_DIRECT3D
 #define RIDGE_API_DIRECT3D_FACTORY(clz, ...) case RenderAPI::DIRECT3D: return new DX##clz(__VA_ARGS__);
 #else
 #define RIDGE_API_DIRECT3D_FACTORY(clz, ...)

@@ -229,4 +229,10 @@ namespace Ridge {
 	{
 		return os << "{x=" << v.x << ",y=" << v.y << "}";
 	}
+
+	// Typed definitions ------------------------------------
+	using Vector2f = Vector2<float>;
+	using Vector2d = Vector2<double>;
+	using Vector2i = Vector2<int>;
+	// ------------------------------------------------------
 }

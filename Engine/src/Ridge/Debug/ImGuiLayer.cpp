@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include <glad/glad.h>
 
-#include "Ridge/Input/Key.h"
+#include "Ridge/Input/Input.h"
 #include "Ridge/Core/Application.h"
 #include "Ridge/Graphics/Context.h"
 
@@ -91,6 +91,10 @@ namespace Ridge {
 			ImGui::Text("Simple overlay\n" "in the corner of the screen.\n" "(right-click to change position)");
 			ImGui::Text("Framerate: %d", static_cast<int>(app.GetFramerate()));
 			ImGui::Text("FrameTime: %f ms", deltaTime);
+			if (Input::IsKeyDown(KeyCode::Space)) {
+				RIDGE_INFO("Space down");
+				ImGui::Text("Space down!");
+			}
 			/*ImGui::Separator();
 			if (ImGui::IsMousePosValid())
 				ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);

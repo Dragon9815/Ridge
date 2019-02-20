@@ -10,7 +10,7 @@ namespace Ridge {
 	{
 		Log::Init();
 		RIDGE_CORE_TRACE("Initializing Ridge Engine {}", RIDGE_BUILD_ID);
-		if (!InitInput()) {
+		if (!Input::Initalize()) {
 			RIDGE_CORE_ERROR("Failed to intialize input");
 		}
 	}

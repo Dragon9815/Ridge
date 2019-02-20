@@ -142,7 +142,7 @@ namespace Ridge {
 		 Keypad0, Keypad1, Keypad2, Keypad3, Keypad4, Keypad5, Keypad6, Keypad7, Keypad8, Keypad9,
 		 KeypadDecimal, KeypadDivide, KeypadMultiply, KeypadSubtract, KeypadAdd, KeypadEnter, KeypadClear, KeypadEqual,
 		 LeftShift, LeftControl, LeftAlt, LeftSuper, RightShift, RightControl, RightAlt, RightSuper, Menu,
-		 Invalid
+		 Invalid, LENGTH
 	};
 
 	class RIDGE_API Key 

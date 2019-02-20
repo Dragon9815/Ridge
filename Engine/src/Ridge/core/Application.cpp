@@ -62,7 +62,7 @@ namespace Ridge {
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		RIDGE_CORE_TRACE(e.ToString());
+		//RIDGE_CORE_TRACE(e.ToString());
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 

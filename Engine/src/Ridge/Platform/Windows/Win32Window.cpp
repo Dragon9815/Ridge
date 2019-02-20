@@ -154,15 +154,16 @@ namespace Ridge
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
 		{
-
-			KeyCode keyCode = TranslateKey(wParam, lParam);
+			KeyCode keyCode = Win32Input::GetInstance()->TranslateKey(wParam, lParam);
 			int scancode = (lParam >> 16) & 0x1FF;
-			bool action = ((lParam >> 31) & 1); // true = released, false = pressed
+			bool released = ((lParam >> 31) & 1); // true = released, false = pressed
 
 			if (keyCode == KeyCode::Invalid)
 				return 0;
 
-			if (action) {
+			Win32Input::GetInstance()->SetKeyState(keyCode, !released);
+
+			if (released) {
 				keyRepeats[scancode] = 0;
 				KeyReleasedEvent event(Key(keyCode, scancode));
 				m_eventCallback(event);
@@ -194,6 +195,8 @@ namespace Ridge
 
 		case WM_MOUSEMOVE:
 		{
+			Win32Input::GetInstance()->SetMousePos(Vector2i(LOWORD(lParam), HIWORD(lParam)));
+			//win32_mouseMove({ LOWORD(lParam), HIWORD(lParam) });
 			MouseMovedEvent event(LOWORD(lParam), HIWORD(lParam));
 			m_eventCallback(event);
 			return 0;
@@ -222,10 +225,12 @@ namespace Ridge
 				button = RD_MOUSE_X2;
 
 			if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN || msg == WM_XBUTTONDOWN) {
+				Win32Input::GetInstance()->SetMouseButtonState(button, true);
 				MouseButtonPressedEvent event(button);
 				m_eventCallback(event);
 			}
 			else {
+				Win32Input::GetInstance()->SetMouseButtonState(button, false);
 				MouseButtonReleasedEvent event(button);
 				m_eventCallback(event);
 			}
@@ -275,43 +280,6 @@ namespace Ridge
 	void WindowsWindow::SetVisibility(bool shown)
 	{
 		ShowWindow(m_hWnd, shown ? SW_SHOW : SW_HIDE);
-	}
-
-	KeyCode WindowsWindow::TranslateKey(WPARAM wParam, LPARAM lParam) {
-		// Windows sends Left Control and Right Alt message for the Right Alt key, so we need to check if 
-		// this is the case and ignore the Left Control message
-		if (wParam == VK_CONTROL) {
-			MSG next;
-			DWORD time;
-
-			// We don't care about the Right Control key
-			if (lParam & 0x01000000)
-				return KeyCode::RightControl;
-
-			time = GetMessageTime();
-
-			// Ignore message, if next message is the Right Alt key
-			if (PeekMessage(&next, NULL, 0, 0, PM_NOREMOVE)) {
-				if (next.message == WM_KEYDOWN || next.message == WM_SYSKEYDOWN ||
-					next.message == WM_KEYUP || next.message == WM_SYSKEYUP)
-				{
-					if (next.wParam == VK_MENU && (next.lParam & 0x01000000) && next.time == time) {
-						return KeyCode::Invalid;
-					}
-				}
-			}
-
-			return KeyCode::LeftControl;
-		}
-
-		if (wParam == VK_PROCESSKEY)
-		{
-			// IME notifies that keys have been filtered by setting the virtual
-			// key-code to VK_PROCESSKEY
-			return KeyCode::Invalid;
-		}
-
-		return translationTable[HIWORD(lParam) & 0x1FF];
 	}
 
 	/*bool WindowsWindow::WGLExtensionSupported(const char* extensionName)

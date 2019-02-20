@@ -265,4 +265,10 @@ namespace Ridge {
 		os << "{x=" << v.x << ",y=" << v.y << ",z=" << v.z << ",w=" << v.w << "}";
 		return os;
 	}
+
+	// Typed definitions ------------------------------------
+	using Vector4f = Vector4<float>;
+	using Vector4d = Vector4<double>;
+	using Vector4i = Vector4<int>;
+	// ------------------------------------------------------
 }

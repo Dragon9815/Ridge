@@ -33,9 +33,7 @@ namespace Ridge
 
 	private:
 		bool InitWindow();
-
 		void Shutdown();
-		KeyCode TranslateKey(WPARAM wParam, LPARAM lParam);
 
 	private:
 		const char* const CLASS_NAME = "RIDGEWNDCLASS";

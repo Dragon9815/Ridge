@@ -13,16 +13,26 @@ workspace "Ridge"
 	objdir 	  ("./obj/" .. outputdir .. "/%{prj.name}")
 	
 	filter {} -- clear filter
+
+	newoption {
+		trigger 	= "with-opengl",
+		description = "Enable OpenGL graphics API for rendering"
+	}
+
+	newoption {
+		trigger 	= "with-d3d",
+		description = "Enable Direct3D graphics API for rendering"
+	}
 	
 	filter "system:windows"
 		cppdialect "C++17"
 		systemversion "latest"
 		characterset "MBCS"
-		defines { "RIDGE_PLATFORM_WINDOWS", "RIDGE_ENABLE_OPENGL", "RIDGE_ENABLE_DIRECTX" }
+		defines { "RIDGE_PLATFORM_WINDOWS" }
 
 	filter "system:linux"
 		cppdialect "C++17"
-		defines { "RIDGE_PLATFORM_LINUX", "RIDGE_ENABLE_OPENGL" }
+		defines { "RIDGE_PLATFORM_LINUX" }
 	
 	filter "configurations:Debug"	
 		defines { "RIDGE_DEBUG" }		
@@ -98,6 +108,26 @@ local Engine = project("Engine")
 		"opengl32.lib",
 		"d3d11.lib"
 	}
+
+	filter "options:with-opengl"
+		defines { "RIDGE_ENABLE_OPENGL" }
+		files 
+		{
+			platformDir .. "OpenGL/**.h",
+			platformDir .. "OpenGL/**.c",
+			platformDir .. "OpenGL/**.hpp",
+			platformDir .. "OpenGL/**.cpp",
+		}
+		
+	filter "options:with-d3d"
+		defines { "RIDGE_ENABLE_DIRECT3D"}
+		files
+		{
+			platformDir .. "DirectX/**.h",
+			platformDir .. "DirectX/**.c",
+			platformDir .. "DirectX/**.hpp",
+			platformDir .. "DirectX/**.cpp",
+		}
 	
 	filter "system:windows"
 		defines { "RIDGE_BUILD_DLL" }
@@ -107,18 +137,9 @@ local Engine = project("Engine")
 			platformDir .. "Windows/**.c",
 			platformDir .. "Windows/**.hpp",
 			platformDir .. "Windows/**.cpp",
-
-			platformDir .. "OpenGL/**.h",
-			platformDir .. "OpenGL/**.c",
-			platformDir .. "OpenGL/**.hpp",
-			platformDir .. "OpenGL/**.cpp",
-
-			platformDir .. "DirectX/**.h",
-			platformDir .. "DirectX/**.c",
-			platformDir .. "DirectX/**.hpp",
-			platformDir .. "DirectX/**.cpp",
 		}
 		
+	filter {} -- clear filter	
 	
 project "Sandbox"
 	kind "ConsoleApp"
