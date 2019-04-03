@@ -6,9 +6,12 @@ layout(location = 1) in vec3 color;
 
 out vec3 frag_vertexColor;
 
+uniform mat4 u_MVP;
+
 void main() 
 {
-	gl_Position = vec4(position, 1.0);
+	vec4 temp = u_MVP * vec4(position, 1.0);
+	gl_Position = vec4(temp.xy, -temp.z, temp.w);
 	frag_vertexColor = color;
 }
 

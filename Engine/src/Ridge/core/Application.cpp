@@ -6,114 +6,124 @@
 #include <gl/gl.h>
 
 namespace Ridge {
-	Application* Application::s_instance = nullptr;
+	Application * Application::s_instance = nullptr;
 
-	Application::Application()
+	Application::Application( )
 	{
-		RIDGE_CORE_ASSERT(!s_instance, "Only one instance of Application can exists!");
+		RIDGE_CORE_ASSERT( !s_instance, "Only one instance of Application can exists!" );
 		s_instance = this;
 
-		m_window = std::unique_ptr<Window>(Window::Create());
-		m_window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
-		if (!m_window->Init()) {
-			RIDGE_CORE_ERROR("Failed to initalize Window!");
+		m_window = std::unique_ptr<Window>( Window::Create( ) );
+		m_window->SetEventCallback( BIND_EVENT_FN( Application::OnEvent ) );
+		if( !m_window->Init( ) )
+		{
+			RIDGE_CORE_ERROR( "Failed to initalize Window!" );
 			return;
 		}
-		m_window->SetVSync(false);
+		m_window->SetVSync( false );
 
-		m_renderer = std::unique_ptr<Renderer>(Context::CreateRenderer());
-		m_frameTimer = std::unique_ptr<Timer>(Timer::Create());
+		m_renderer = std::unique_ptr<Renderer>( Context::CreateRenderer( ) );
+		m_frameTimer = std::unique_ptr<Timer>( Timer::Create( ) );
 	}
 
-	Application::~Application()
+	Application::~Application( )
 	{
 	}
 
-	bool Application::OnInit()
+	bool Application::OnInit( )
 	{
-		m_window->SetVisibility(true);
+		m_window->SetVisibility( true );
 		//glClearColor(0.3f, 0.3f, 0.7f, 1.0f);
 		//m_renderer->SetClearColor(0.3f, 0.3f, 0.7f, 1.0f);
 
 		return true;
 	}
 
-	void Application::OnUpdate(double deltaTime)
+	void Application::OnUpdate( double deltaTime )
 	{
-		m_window->OnUpdate();
+		m_window->OnUpdate( );
 
-		for (auto layer : m_layerStack) {
-			layer->OnUpdate(deltaTime);
+		for( auto layer : m_layerStack )
+		{
+			layer->OnUpdate( deltaTime );
 		}
 	}
 
-	void Application::OnRender(double deltaTime) 
+	void Application::OnRender( double deltaTime )
 	{
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (auto layer : m_layerStack) {
-			layer->OnRender(deltaTime);
+		for( auto layer : m_layerStack )
+		{
+			layer->OnRender( deltaTime );
 		}
 	}
-	
-	void Application::OnShutdown() 
+
+	void Application::OnShutdown( )
 	{
 	}
 
-	void Application::OnEvent(Event& e)
+	void Application::OnEvent( Event & e )
 	{
-		EventDispatcher dispatcher(e);
+		EventDispatcher dispatcher( e );
 		//RIDGE_CORE_TRACE(e.ToString());
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>( BIND_EVENT_FN( Application::OnWindowClose ) );
+		dispatcher.Dispatch<WindowResizeEvent>( BIND_EVENT_FN( Application::OnWindowResize ) );
 
-		m_renderer->OnEvent(e);
+		m_renderer->OnEvent( e );
 
-		for (auto it = m_layerStack.end(); it != m_layerStack.begin(); ) {
-			(*--it)->OnEvent(e);
-			if (e.Handled)
+		for( auto it = m_layerStack.end( ); it != m_layerStack.begin( ); )
+		{
+			( *--it )->OnEvent( e );
+			if( e.Handled )
 				break;
 		}
 	}
 
-	void Application::PushLayer(Layer* layer)
+	void Application::PushLayer( Layer * layer )
 	{
-		m_layerStack.PushLayer(layer);
+		m_layerStack.PushLayer( layer );
 	}
 
-	void Application::PushOverlay(Layer* overlay)
+	void Application::PushOverlay( Layer * overlay )
 	{
-		m_layerStack.PushOverlay(overlay);
+		m_layerStack.PushOverlay( overlay );
 	}
 
-	bool Application::OnWindowClose(WindowCloseEvent & e)
+	bool Application::OnWindowClose( WindowCloseEvent & e )
 	{
 		m_running = false;
 		return true;
 	}
 
-	bool Application::OnWindowResize(WindowResizeEvent & e)
+	bool Application::OnWindowResize( WindowResizeEvent & e )
 	{
 		//GLCall(glViewport(0, 0, e.GetWidth(), e.GetHeight()));
+
+		// TODO: change this to make more sense
+		m_renderer->PrepareFrame( );
+		OnRender( 0.0 );
+		Context::SwapBuffers( );
 		return false;
 	}
 
-	void Application::Run()
+	void Application::Run( )
 	{
-		m_running = OnInit();
-		m_frameTimer->Reset();
+		m_running = OnInit( );
+		m_frameTimer->Reset( );
 
-		while (m_running) {
-			double deltaTime = m_frameTimer->ElapsedMillis();
-			m_frameTimer->Reset();
-			m_framerate = 1000 / deltaTime;
+		while( m_running )
+		{
+			double deltaTime = m_frameTimer->ElapsedMillis( );
+			m_frameTimer->Reset( );
+			m_framerate = static_cast<float>( 1000 / deltaTime );
 
-			OnUpdate(deltaTime);
+			OnUpdate( deltaTime );
 
-			m_renderer->PrepareFrame();
-			OnRender(deltaTime);
-			Context::SwapBuffers();
+			m_renderer->PrepareFrame( );
+			OnRender( deltaTime );
+			Context::SwapBuffers( );
 		}
 
-		OnShutdown();
+		OnShutdown( );
 	}
 }

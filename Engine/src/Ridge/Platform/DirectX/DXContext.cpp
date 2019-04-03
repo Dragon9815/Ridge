@@ -60,7 +60,7 @@ namespace Ridge {
 		swapDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // alt-enter fullscreen
 
 		HRESULT result;
-		for (int i = 0; i < numDriverTypes; i++)
+		for (UINT i = 0; i < numDriverTypes; i++)
 		{
 			result = D3D11CreateDeviceAndSwapChain(NULL, driverTypes[i], NULL, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &swapDesc, &m_swapChain, &m_device, &m_featureLevel, &m_dxContext);
 			if (SUCCEEDED(result)) {

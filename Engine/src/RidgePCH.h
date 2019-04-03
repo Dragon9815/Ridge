@@ -28,3 +28,7 @@
 #include "Ridge/util/Log.h"
 #include "Ridge/Events/Event.h"
 #include "Ridge/Types.h"
+
+#include "Ridge/Math/Matrix.h"
+#include "Ridge/Math/Vector.h"
+#include "Ridge/Math/Quaternion.h"

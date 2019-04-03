@@ -98,7 +98,7 @@ namespace Ridge { namespace Graphics {
 	void GLShaderProgram::SetUniform(const std::string& name, const Matrix4f& value)
 	{
 		GLint location = glGetUniformLocation(m_handle, name.c_str());
-		glUniformMatrix4fv(location, 1, GL_TRUE, value.GetPointer());
+		glUniformMatrix4fv(location, 1, GL_TRUE, value.Transpose().GetPointer());
 	}
 
 	void GLShaderProgram::Bind()

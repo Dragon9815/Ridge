@@ -4,24 +4,32 @@
 #include "Ridge/Types.h"
 
 #include "BufferLayout.h"
+#include "Vertex.h"
 
-namespace Ridge { namespace Graphics {
-	enum class BufferUsage {
-		Static, Dynamic
-	};
+namespace Ridge {
+	namespace Graphics {
 
-	class RIDGE_API VertexBuffer {
-	public:
-		virtual ~VertexBuffer() {}
+		enum class BufferUsage
+		{
+			Static, Dynamic
+		};
 
-		virtual void Resize(uint size) = 0;
-		virtual void SetLayout(const BufferLayout& layout) = 0;
-		virtual void SetData(uint size, const void* data) = 0;
+		class RIDGE_API VertexBuffer
+		{
+		public:
+			virtual ~VertexBuffer( )
+			{
+			}
 
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
+			virtual void Resize( uint size ) = 0;
+			virtual void SetData( const Vertex * vertices, uint vertexCount, const BufferLayout & layout ) = 0;
 
-	public:
-		static VertexBuffer* Create(BufferUsage usage = BufferUsage::Static);
-	};
-} }
+			virtual void Bind( ) = 0;
+			virtual void Unbind( ) = 0;
+
+		public:
+			static VertexBuffer * Create( BufferUsage usage = BufferUsage::Static );
+		};
+
+	}
+}
